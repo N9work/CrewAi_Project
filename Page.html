@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Task Selector</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 30px;
+            text-align: center;
+            background-color: #f4f4f4;
+        }
+        h2 {
+            color: #333;
+        }
+        select, button {
+            font-size: 16px;
+            padding: 10px;
+            margin: 10px;
+        }
+        button {
+            background-color: #28a745;
+            color: white;
+            border: none;
+            cursor: pointer;
+            transition: 0.3s;
+            border-radius: 5px;
+            padding: 12px 20px;
+        }
+        button:hover {
+            background-color: #218838;
+        }
+        .result-container {
+            margin-top: 20px;
+            padding: 20px;
+            border-radius: 8px;
+            background-color: white;
+            box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.15);
+            text-align: justify;  /* ✅ จัดข้อความชิดขอบทั้งสองด้าน */
+            max-width: 900px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+        pre {
+            white-space: pre-wrap;
+            word-wrap: break-word;
+            font-size: 16px;
+            color: #333;
+            line-height: 1.6;
+            text-align: justify;  /* ✅ จัดข้อความชิดขอบทั้งสองด้าน */
+        }
+    </style>
+    
+    
+</head>
+<body>
+    <h2>🔹 เลือก Task ที่ต้องการให้ CrewAI ทำงาน</h2>
+    
+    <label for="task-dropdown">เลือก Task:</label>
+    <select id="task-dropdown">
+        <option value="Phatthalung">🔍 Phatthalung</option>
+        <option value="Trang">📄 Trang</option>
+        <option value="analyze_data">📊 Analyze Market Data</option>
+    </select>
+    
+    <button onclick="submitTask()">✅ Submit Task</button>
+
+    <div class="result-container">
+        <h3>📌 ผลลัพธ์:</h3>
+        <p id="task-status">รอผลลัพธ์...</p>
+        <pre id="task-result"></pre>
+    </div>
+
+    <script>
+    function formatResult(text) {
+    const finalImageUrl = '../pics/2_6.jpg';
+
+    text = text.replace(/(Package \d+:.*?)/g, `$1 <img src="${finalImageUrl}" alt="Tourist Spot" style="width:100%; max-width:800px; display:block; margin: 10px auto;">`);
+    // ✅ แปะรูปด้านบนของ <h1>
+    text = text.replace(/^# (.*?)$/gm,'"><h1>$1</h1>'); 
+
+    // ✅ แปลง **ข้อความหนา** เป็น <strong>
+    text = text.replace(/\*\*(.*?)\*\*/g, `<strong>$1</strong>`);
+
+    // ✅ แปลง ## Heading เป็น <h2>, ### Heading เป็น <h3>
+    text = text.replace(/^## (.*?)$/gm, '<h2>$1</h2>'); // หัวข้อรอง
+    text = text.replace(/##\s*(.*?)\s*##/g, '<h2>$1</h2>');
+    text = text.replace(/^### (.*?)$/gm, '<h3>$1</h3>'); // หัวข้อย่อย
+
+    // ✅ แปลง * รายการ เป็น <ul><li> (รองรับหลายบรรทัด)
+    text = text.replace(/(?:\n|^)\* (.*?)(?=\n|$)/g, '<li>$1</li>'); 
+    text = text.replace(/(<li>.*<\/li>)/g, '<ul>$1</ul>'); // ครอบ <ul> ให้รายการ
+
+    // ✅ แปลงขึ้นบรรทัดใหม่เป็น <br> เฉพาะบรรทัดปกติ (ยกเว้น <h1> - <h3>, <ul>, <li> และ <strong>)
+    text = text.replace(/(?<!<\/?(h\d|ul|li|strong)>)\n/g, '<br>');
+
+    return text;
+}
+
+        
+    
+        async function submitTask() {
+            const selectedTask = document.getElementById('task-dropdown').value;
+            const statusEl = document.getElementById('task-status');
+            const resultEl = document.getElementById('task-result');
+    
+            statusEl.innerText = "⏳ CrewAI กำลังทำงาน...";
+            resultEl.innerHTML = "";
+    
+            try {
+                const response = await fetch('http://127.0.0.1:8000/set_task', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ task_type: selectedTask })
+                });
+    
+                const result = await response.json();
+                statusEl.innerText = "✅ Task เสร็จสิ้น!";
+                
+                // ✅ ใช้ฟังก์ชัน formatResult() เพื่อทำให้แสดงผลสวยขึ้น
+                resultEl.innerHTML = formatResult(result.result);
+            } catch (error) {
+                statusEl.innerText = "❌ เกิดข้อผิดพลาด!";
+                resultEl.innerText = error.message;
+            }
+        }
+    </script>
+    
+</body>
+</html>

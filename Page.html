@@ -75,30 +75,65 @@
     </div>
 
     <script>
+    
+    function getRandomImage() {
+    const images = [
+        '../pics/2_6.jpg',
+        '../pics/paktai10.jpg',
+        '../pics/Song1.jpeg',
+        '../pics/Song2.jpeg',
+        '../pics/Song3.jpeg',
+        '../pics/Song4.jpeg',
+        '../pics/Song5.jpeg',
+        '../pics/Song6.jpeg',
+        '../pics/St1.jpeg',
+        '../pics/St2.jpeg',
+    ];
+
+    
+    // เลือกรูปภาพแบบสุ่ม
+    const randomIndex = Math.floor(Math.random() * images.length);
+    const selectedImage = images[randomIndex];
+    
+    // ลบภาพที่ถูกเลือกออกจากอาร์เรย์
+    images.splice(randomIndex, 1); 
+    
+    // ตรวจสอบว่ามีภาพเหลือให้เลือกหรือไม่
+    if (images.length === 0) return null; // ถ้าหมดแล้วก็คืนค่า null
+
+    return selectedImage;
+
+}
+
     function formatResult(text) {
-    const finalImageUrl = '../pics/2_6.jpg';
+   
+    // แทรกรูปภาพก่อนหัวข้อ Package
+    text = text.replace(/(Package \d+:.*?)/g, (match) => {
+        const finalImageUrl = getRandomImage(); // เรียกรูปภาพตาม package index
+        return `${match} <img src="${finalImageUrl}" alt="Tourist Spot" style="width:100%; max-width:800px; display:block; margin: 10px auto;">`;
+    });
 
-    text = text.replace(/(Package \d+:.*?)/g, `$1 <img src="${finalImageUrl}" alt="Tourist Spot" style="width:100%; max-width:800px; display:block; margin: 10px auto;">`);
-    // ✅ แปะรูปด้านบนของ <h1>
-    text = text.replace(/^# (.*?)$/gm,'"><h1>$1</h1>'); 
+    // แปะรูปด้านบนของ <h1>
+    text = text.replace(/^# (.*?)$/gm, '<h1>$1</h1>'); 
 
-    // ✅ แปลง **ข้อความหนา** เป็น <strong>
+    // แปลง **ข้อความหนา** เป็น <strong>
     text = text.replace(/\*\*(.*?)\*\*/g, `<strong>$1</strong>`);
 
-    // ✅ แปลง ## Heading เป็น <h2>, ### Heading เป็น <h3>
+    // แปลง ## Heading เป็น <h2>, ### Heading เป็น <h3>
     text = text.replace(/^## (.*?)$/gm, '<h2>$1</h2>'); // หัวข้อรอง
     text = text.replace(/##\s*(.*?)\s*##/g, '<h2>$1</h2>');
     text = text.replace(/^### (.*?)$/gm, '<h3>$1</h3>'); // หัวข้อย่อย
 
-    // ✅ แปลง * รายการ เป็น <ul><li> (รองรับหลายบรรทัด)
+    // แปลง * รายการ เป็น <ul><li> (รองรับหลายบรรทัด)
     text = text.replace(/(?:\n|^)\* (.*?)(?=\n|$)/g, '<li>$1</li>'); 
     text = text.replace(/(<li>.*<\/li>)/g, '<ul>$1</ul>'); // ครอบ <ul> ให้รายการ
 
-    // ✅ แปลงขึ้นบรรทัดใหม่เป็น <br> เฉพาะบรรทัดปกติ (ยกเว้น <h1> - <h3>, <ul>, <li> และ <strong>)
+    // แปลงขึ้นบรรทัดใหม่เป็น <br> เฉพาะบรรทัดปกติ (ยกเว้น <h1> - <h3>, <ul>, <li> และ <strong>)
     text = text.replace(/(?<!<\/?(h\d|ul|li|strong)>)\n/g, '<br>');
-
-    return text;
+    
+    return text; // คืนค่าผลลัพธ์หลังจากทำการแปลงทั้งหมด
 }
+
 
         
     

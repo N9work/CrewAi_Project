@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Prompt:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&family=Sour+Gummy:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet">
+    <title>Trip Planner</title>
+    <style>
+        body {
+            font-family: "Sour Gummy", serif;
+            margin: 30px;
+            text-align: center;
+            background-image: url('https://ik.imagekit.io/tvlk/blog/2020/09/%E0%B8%AB%E0%B8%A5%E0%B8%B5%E0%B9%80%E0%B8%9B%E0%B9%8A%E0%B8%B0-2.jpg?tr=q-70,c-at_max,w-500,h-300,dpr-2'); /* ใส่ URL รูป */
+            background-size: cover; /* ปรับให้รูปครอบคลุมทั้งหน้า */
+            background-position: center; /* จัดให้รูปอยู่ตรงกลาง */
+            background-repeat: no-repeat; /* ไม่ให้รูปซ้ำ */
+            height: 100vh; /* ความสูงเต็มหน้าจอ */
+            margin: 0; /* เอาขอบขาวรอบหน้าจอออก */
+
+        }
+        body::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: inherit; /* ใช้พื้นหลังเดียวกัน */
+            filter: blur(5px); /* ปรับค่าความเบลอ */
+            z-index: -1; /* ทำให้เบลอเฉพาะพื้นหลัง */
+        }
+        .result-container {
+            padding: 20px;
+            border-radius: 8px;
+            background-color: white;
+            box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.15);
+            text-align: justify;
+            max-width: 800px;
+            margin: 20px auto;
+        }
+        .result-container {
+            margin-top: 20px;
+            padding: 20px;
+            border-radius: 8px;
+            background-color: white;
+            box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.15);
+            text-align: justify;  /* ✅ จัดข้อความชิดขอบทั้งสองด้าน */
+            max-width: 1500px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+        .pre {
+            white-space: pre-wrap;
+            word-wrap: break-word;
+            font-family: "Sour Gummy", serif;
+            font-size: 20px;
+            color: #333;
+            line-height: 1.6;
+            text-align: justify;  /* ✅ จัดข้อความชิดขอบทั้งสองด้าน */
+        }
+    </style>
+</head>
+<body>
+    <h2>📌 ผลลัพธ์ของคุณ</h2>
+    <div class="result-container">
+        <div class="pre" id="task-result"></div>
+    </div>
+    <button onclick="goBack()">🔙 กลับ</button>
+
+<script>
+
+let text = localStorage.getItem("taskResult") || "ไม่มีข้อมูล";
+
+function goBack() {
+    window.location.href = "Page.html"; // กลับไปหน้าเดิม
+}
+
+function getRandomImage() {
+    const images = [
+        '../pics/2_6.jpg',
+        '../pics/paktai10.jpg',
+        '../pics/Song1.jpeg',
+        '../pics/Song2.jpeg',
+        '../pics/Song3.jpeg',
+        '../pics/Song4.jpeg',
+        '../pics/Song5.jpeg',
+        '../pics/Song6.jpeg',
+        '../pics/St1.jpeg',
+        '../pics/St2.jpeg',
+    ];
+
+    
+// เลือกรูปภาพแบบสุ่ม
+const randomIndex = Math.floor(Math.random() * images.length);
+const selectedImage = images[randomIndex];
+
+// ลบภาพที่ถูกเลือกออกจากอาร์เรย์
+images.splice(randomIndex, 1); 
+
+// ตรวจสอบว่ามีภาพเหลือให้เลือกหรือไม่
+if (images.length === 0) return null; // ถ้าหมดแล้วก็คืนค่า null
+
+return selectedImage;
+
+}
+function Replacetext(text){
+            // รับ URL ของภาพที่สุ่มได้
+            text = text.replace(/(Package:\s.*?)(\n|$)/gm, (match) => {
+            const finalImageUrl = getRandomImage(); // ฟังก์ชันดึงรูปภาพแบบสุ่ม
+            return `${match}  
+            <img src="${finalImageUrl}" alt="Tourist Spot" style="height:400px; width:600px; display:block; margin: 20px auto; border-radius: 15px; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); transition: transform 0.3s ease;" onmouseover="this.style.transform='scale(1.05)';" onmouseout="this.style.transform='scale(1)';">`;
+        });
+            
+            return text;
+        }
+
+        // แทนที่ข้อความใน localStorage ด้วยรูปภาพที่สุ่มมา
+        const updatedPackageText = Replacetext(text);
+
+        // แสดงผลลัพธ์ในหน้าเว็บ
+        document.getElementById("task-result").innerHTML = updatedPackageText;
+
+        function goBack() {
+            window.location.href = "Page.html"; // กลับไปหน้าเดิม
+        }
+</script>
+</body>
+</html>

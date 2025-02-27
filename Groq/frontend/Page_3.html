@@ -1,0 +1,455 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Prompt:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&family=Sour+Gummy:ital,wght@0,100..900;1,100..900&display=swap"
+        rel="stylesheet">
+    <title>Trip Planner</title>
+    <style>
+        body {
+            font-family: "Sour Gummy", serif;
+            text-align: center;
+            background-image: url('https://ik.imagekit.io/tvlk/blog/2020/09/%E0%B8%AB%E0%B8%A5%E0%B8%B5%E0%B9%80%E0%B8%9B%E0%B9%8A%E0%B8%B0-2.jpg?tr=q-70,c-at_max,w-500,h-300,dpr-2');
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            height: 100vh;
+            margin: 0;
+        }
+
+        body::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: inherit;
+            filter: blur(5px);
+            z-index: -1;
+        }
+
+
+        .container {
+            background-color: #f0f0f0;
+            border-radius: 8px;
+            padding: 20px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            max-width: 30%;
+            margin: 5px auto;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .sticker {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            width: 100px;
+            height: auto;
+            z-index: 999;
+        }
+
+        .form-group {
+            width: 100%;
+            padding: 10px;
+        }
+
+        .input-field {
+            width: 100%;
+            padding: 12px;
+            border-radius: 8px;
+            border: 1px solid #ccc;
+            font-size: 16px;
+            box-sizing: border-box;
+        }
+
+        .custom-box {
+            display: flex;
+            align-items: center;
+            border: 2px solid #ccc;
+            border-radius: 10px;
+            padding: 15px;
+            background-color: #f9f9f9;
+            width: 90%;
+        }
+
+        .icon-box {
+            width: 80px;
+            height: 80px;
+            background-color: #ddd;
+            border-radius: 20%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin-right: 10px;
+        }
+
+        .icon {
+            font-size: 40px;
+        }
+
+        .content-box {
+            flex: 1;
+        }
+
+        h3 {
+            font-size: 18px;
+            margin: 0 0 10px 0;
+            text-align: left;
+        }
+
+        select.custom-select {
+            width: 100%;
+            padding: 12px;
+            border-radius: 5px;
+            border: 1px solid #ccc;
+            font-size: 18px;
+
+        }
+
+        select.custom-select option {
+            font-size: 18px;
+        }
+
+        .submit-btn {
+            padding: 12px 25px;
+            font-size: 18px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .submit-btn:hover {
+            background-color: #255828;
+        }
+
+        .submit-btn:active {
+            transform: scale(0.98);
+            background-color: #388e3c;
+        }
+
+        .submit-btn:focus {
+            outline: none;
+        }
+
+        .status-default {
+            font-size: 18px;
+            font-weight: bold;
+            color: #333;
+        }
+
+        .status-done {
+            font-size: 18px;
+            font-weight: bold;
+            color: #2ecc71;
+        }
+
+        .status-loading {
+            font-size: 18px;
+            font-weight: bold;
+        }
+
+        .status-loading:after {
+            display: inline-block;
+            content: " CrewAI กำลังทำงาน";
+            animation: changeColor 3s infinite, dots 1.5s steps(4, end) infinite;
+        }
+
+        @keyframes changeColor {
+            0% {
+                color: #3498db;
+            }
+
+            33% {
+                color: #2ecc71;
+            }
+
+            66% {
+                color: #e74c3c;
+            }
+
+            100% {
+                color: #3498db;
+            }
+        }
+
+        @keyframes dots {
+            0% {
+                content: " CrewAI กำลังทำงาน";
+            }
+
+            33% {
+                content: " CrewAI กำลังทำงาน.";
+            }
+
+            66% {
+                content: " CrewAI กำลังทำงาน..";
+            }
+
+            100% {
+                content: " CrewAI กำลังทำงาน...";
+            }
+        }
+
+        .status-error {
+            font-size: 18px;
+            font-weight: bold;
+            color: #e74c3c;
+
+        }
+
+        .status-default,
+        .status-done,
+        .status-error,
+        .status-loading {
+            text-align: center;
+        }
+        .result-container {
+            margin-top: 20px;
+            padding: 20px;
+            border-radius: 8px;
+            background-color: white;
+            box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.15);
+            text-align: center;  /* ✅ จัดข้อความชิดขอบทั้งสองด้าน */
+            max-width: 1500px;
+            margin-left: auto;
+            margin-right: auto;
+            display: none;
+        }
+        pre {
+            white-space: pre-wrap;
+            word-wrap: break-word;
+            font-family: "Sour Gummy", serif;
+            font-size: 20px;
+            color: #333;
+            line-height: 1.6;
+            text-align: justify;  /* ✅ จัดข้อความชิดขอบทั้งสองด้าน */
+        }
+        .Topic{
+            text-align: center;
+        }
+    </style>
+</head>
+
+<body>
+    <br>
+    <h2 style="color:white; text-align:center;">CrewAI TRIP PLANNER</h2>
+    <br>
+    <img src="../pics/sun_stick.png" class="sticker" alt="Sticker" style="display:block; margin:auto;">
+    <div class="container">
+        <div class="form-group">
+            <div class="custom-box">
+                <div class="icon-box">
+                    <span class="icon">🌴</span>
+                </div>
+                <div class="content-box">
+                    <h3 for="task-dropdown">เลือกจังหวัด:</h3>
+                    <select id="task-dropdown" class="custom-select">
+                        <option value="Phatthalung">🌴 พัทลุง</option>
+                        <option value="Satun">🌊 สตูล</option>
+                        <option value="Songkhla">🏖 สงขลา</option>
+                        <option value="Trang">⛰ ตรัง</option>
+                        <option value="Yala">🌅 ยะลา</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+
+        <div class="form-group">
+            <div class="custom-box">
+                <div class="icon-box">
+                    <span class="icon">📊</span>
+                </div>
+                <div class="content-box">
+                    <h3 for="Style-dropdown">เลือกสไตล์:</h3>
+                    <select id="Style-dropdown" class="custom-select">
+                        <option value="Any">📊 ทุกรูปแบบ</option>
+                        <option value="Cafe">☕ คาเฟ่</option>
+                        <option value="Extreme Activity">💥 กิจกรรมสุดขั้ว</option>
+                        <option value="Historical">🏰 ประวัติศาสตร์</option>
+                        <option value="Natural">🌳 ธรรมชาติ</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+
+        <div class="form-group">
+            <div class="custom-box">
+                <div class="icon-box">
+                    <span class="icon">💵</span>
+                </div>
+                <div class="content-box">
+                    <h3 for="Cost-dropdown">เลือกงบประมาณ:</h3>
+                    <select id="Cost-dropdown" class="custom-select">
+                        <option value="Any">📊 ทุกราคา</option>
+                        <option value="Low">💵 ราคาประหยัด</option>
+                        <option value="Mid">💰 ราคาปานกลาง</option>
+                        <option value="High">💎 ราคาสูง</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+
+        <div class="form-group">
+            <div class="custom-box">
+                <div class="icon-box">
+                    <span class="icon">📄</span>
+                </div>
+                <div class="content-box">
+                    <h3 for="Day-dropdown">เลือกจำนวนวัน:</h3>
+                    <select id="Day-dropdown" class="custom-select">
+                        <option value="Any">🔄 ทุกวัน</option>  
+                        <option value="1">📅 1 วัน</option>  
+                        <option value="2">📆 2 วัน</option> 
+                        <option value="3">⏳ 3 วัน</option> 
+                        <option value="4">📅 4 วัน</option> 
+                        <option value="5">📆 5 วัน</option> 
+                        <option value="6">🗓️ 6 วัน</option>  
+                        <option value="7">📆 7 วัน</option>  
+                        <option value="more7">📅 มากกว่า 7 วัน</option> 
+                    </select>                    
+                </div>
+            </div>
+        </div>
+
+        <div class="form-group">
+            <h3 for="adult" style="text-align: center;">ผู้ใหญ่:</h3>
+            <input type="text" id="adult" class="input-field" placeholder="กรุณากรอกจำนวนผู้ใหญ่" />
+        </div>
+
+        <div class="form-group">
+            <h3 for="rq" style="text-align: center;">ความต้องการเพิ่มเติม:</h3>
+            <input type="text" id="rq" class="input-field" placeholder="กรุณากรอกความต้องการเพิ่มเติม" />
+        </div>
+
+        <button onclick="submitTask()" class="submit-btn">✅ ยืนยัน</button>
+        <p id="task-status" class="status-default"></p>
+    </div>
+    <div class="result-container">
+        <pre id="task-result"></pre>
+    </div>
+</body>
+<script>
+
+    function getRandomImage() {
+        const images = [
+            '../pics/2_6.jpg',
+            '../pics/paktai10.jpg',
+            '../pics/Song1.jpeg',
+            '../pics/Song2.jpeg',
+            '../pics/Song3.jpeg',
+            '../pics/Song4.jpeg',
+            '../pics/Song5.jpeg',
+            '../pics/Song6.jpeg',
+            '../pics/St1.jpeg',
+            '../pics/St2.jpeg',
+        ];
+
+
+        // เลือกรูปภาพแบบสุ่ม
+        const randomIndex = Math.floor(Math.random() * images.length);
+        const selectedImage = images[randomIndex];
+
+        // ลบภาพที่ถูกเลือกออกจากอาร์เรย์
+        images.splice(randomIndex, 1);
+
+        // ตรวจสอบว่ามีภาพเหลือให้เลือกหรือไม่
+        if (images.length === 0) return null; // ถ้าหมดแล้วก็คืนค่า null
+
+        return selectedImage;
+
+    }
+
+    function formatResult(text) {
+
+        // แทรกรูปภาพก่อนหัวข้อ Package
+        text = text.replace(/Package \d+:.*?(\n|$)/g, (match) => {
+            const finalImageUrl = getRandomImage(); // เรียกรูปภาพตาม package index
+            return `<div class="Topic">${match}</div> <img src="${finalImageUrl}" alt="Tourist Spot" style="width:600px; height:400px; display:block; margin: 20px auto; border-radius: 15px; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); transition: transform 0.3s ease; " onmouseover="this.style.transform='scale(1.05)';" onmouseout="this.style.transform='scale(1)';">`;
+        });
+        // text = text.replace(/Night\)/gm, (match) => {
+        //     const finalImageUrl = getRandomImage(); // เรียกรูปภาพตาม package index
+        //     return `${match} <img src="${finalImageUrl}" alt="Tourist Spot" style="width:600px; height:400px; display:block; margin: 20px auto; border-radius: 15px; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); transition: transform 0.3s ease; " onmouseover="this.style.transform='scale(1.05)';" onmouseout="this.style.transform='scale(1)';">`;
+        // });
+        text = text.replace(/Afternoon/g, (match) => {
+            return `<br><strong>${match}</strong>`;
+        });
+        text = text.replace(/Evening/g, (match) => {
+            return `<br><strong>${match}</strong>`;
+        });
+
+        return text; // คืนค่าผลลัพธ์หลังจากทำการแปลงทั้งหมด
+    }
+
+    async function submitTask() {
+        const selectedTask = document.getElementById('task-dropdown').value;
+        const selectedStyle = document.getElementById('Style-dropdown').value;
+        const selectedCost = document.getElementById('Cost-dropdown').value;
+        const selectedDay = document.getElementById('Day-dropdown').value;
+        const Adults = document.getElementById('adult').value;
+        const Rq = document.getElementById('rq').value;
+        const statusEl = document.getElementById('task-status');
+        const resultEl = document.getElementById('task-result');
+        const resultContainer = document.querySelector('.result-container');
+
+        if (!Adults) {
+            // เปลี่ยนข้อความและสถานะเป็นข้อผิดพลาด
+            statusEl.classList.remove('status-default', 'status-loading', 'status-done');
+            statusEl.classList.add('status-error');
+            statusEl.innerText = "❌ กรุณากรอกจำนวนผู้ใหญ่!";
+            return;
+        }
+
+        resultContainer.style.display = "none";
+        // ลบ class ที่มีอยู่ก่อน และเพิ่ม class ใหม่สำหรับการโหลด
+        statusEl.classList.remove('status-default', 'status-error', 'status-done');
+        statusEl.classList.add('status-loading');  // เพิ่ม class สำหรับการโหลด
+        statusEl.innerText = "";  // แสดงข้อความเมื่อกำลังโหลด
+        resultEl.innerHTML = "";
+
+        try {
+            const response = await fetch('http://127.0.0.1:8000/set_task', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    task_type: selectedTask,
+                    style: selectedStyle,
+                    cost: selectedCost,
+                    day: selectedDay,
+                    adults: Adults,
+                    Rq: Rq,
+                })
+            });
+
+            const result = await response.json();
+
+            // เปลี่ยนสถานะเป็นเสร็จสิ้น
+            statusEl.classList.remove('status-loading');
+            statusEl.classList.add('status-done');
+            statusEl.innerText = "✅ Task เสร็จสิ้น!";
+
+            // แสดงผลลัพธ์
+            resultContainer.style.display = "block";
+            resultEl.innerHTML = formatResult(result.result);
+        } catch (error) {
+            // เปลี่ยนสถานะเป็นข้อผิดพลาด
+            statusEl.classList.remove('status-loading', 'status-done');
+            statusEl.classList.add('status-error');
+            statusEl.innerText = "❌ เกิดข้อผิดพลาด!";
+            resultEl.innerText = error.message;
+        }
+    }
+</script>
+
+</body>
+
+</html>

@@ -1,4 +1,4 @@
-#การรัน Crewai Trip Palnner
+# การรัน Crewai Trip Palnner
 - 1.เปิด folder Groq
 - 2.เปิด cmd activate env
 - 3.cd เข้า trip
